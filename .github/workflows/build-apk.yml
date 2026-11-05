@@ -1,0 +1,32 @@
+name: Crear APK HabitPet
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: '8.9'
+
+      - name: Extraer proyecto
+        run: unzip HabitPet_proyecto_Android_inicial.zip -d proyecto
+
+      - name: Compilar APK
+        run: cd proyecto && gradle assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HabitPet-APK
+          path: proyecto/app/build/outputs/apk/debug/app-debug.apk
