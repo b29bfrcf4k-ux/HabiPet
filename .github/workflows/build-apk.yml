@@ -28,7 +28,7 @@ jobs:
           gradle-version: '8.9'
 
       - name: Extraer proyecto
-        run: unzip -o HabitPet_proyecto_Android_inicial.zip -d proyecto
+        run: unzip -o HabitPet_Android_completo.zip -d proyecto
 
       - name: Compilar APK
         run: cd proyecto && gradle assembleDebug
