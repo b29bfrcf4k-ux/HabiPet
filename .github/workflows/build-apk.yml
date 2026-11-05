@@ -31,10 +31,10 @@ jobs:
         run: unzip -o HabitPet_Android_completo.zip -d proyecto
 
       - name: Compilar APK
-        run: cd proyecto && gradle assembleDebug
+        run: cd proyecto/HabitPet_Android && gradle assembleDebug
 
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
           name: HabitPet-APK
-          path: proyecto/app/build/outputs/apk/debug/app-debug.apk
+          path: proyecto/HabitPet_Android/app/build/outputs/apk/debug/app-debug.apk
