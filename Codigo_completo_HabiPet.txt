@@ -1,0 +1,369 @@
+CÓDIGO FUENTE DEL PROYECTO HABIPET
+=================================
+
+La aplicación usa Java para abrir la app Android y HTML, CSS y JavaScript para la interfaz y sus funciones.
+A continuación se incluyen los archivos principales del proyecto.
+
+==============================================================================
+ARCHIVO: app/src/main/java/com/habitpet/app/MainActivity.java
+==============================================================================
+
+package com.habitpet.app;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.webkit.WebSettings;
+import android.view.View;
+import android.view.WindowManager;
+
+public class MainActivity extends Activity {
+    private WebView webView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(android.graphics.Color.rgb(118, 80, 232));
+        getWindow().setNavigationBarColor(android.graphics.Color.rgb(118, 80, 232));
+        webView = new WebView(this);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
+        webView.setWebViewClient(new WebViewClient());
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.loadUrl("file:///android_asset/index.html");
+        setContentView(webView);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView != null && webView.canGoBack()) webView.goBack();
+        else super.onBackPressed();
+    }
+}
+
+
+==============================================================================
+ARCHIVO: app/src/main/assets/index.html
+==============================================================================
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6c4ce3">
+<title>HabiPet — Tu aventura comienza aquí</title>
+<style>
+:root{--purple:#6c4ce3;--pink:#ff6fae;--yellow:#ffd45c;--mint:#54d6b2;--ink:#292447;--muted:#77728f;--bg:#f5f2ff;--card:#fff;--line:#eee9fb}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#f7f3ff,#fff6f8 55%,#effdf8);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);min-height:100vh}
+.app{max-width:480px;margin:auto;min-height:100vh;padding:18px 16px 100px}
+header{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:-.7px}.logo{width:42px;height:42px;border-radius:15px;background:linear-gradient(145deg,#8a6aff,#6242d7);display:grid;place-items:center;color:white;font-size:23px;box-shadow:0 6px 16px #7659dc55}
+.coins{background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:16px;font-weight:800;color:#8c6500}
+h1{font-size:26px;line-height:1.15;margin:0 0 5px;letter-spacing:-.7px}.sub{margin:0;color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:17px;box-shadow:0 9px 25px #4a36720b;margin-top:15px}
+.hero{background:linear-gradient(145deg,#7556e8,#9d71f5 65%,#c084ed);color:white;position:relative;overflow:hidden;padding:20px}
+.hero:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;background:#ffffff13;right:-65px;top:-65px}
+.hero-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.level{background:#ffffff25;padding:7px 11px;border-radius:30px;font-size:12px;font-weight:800}
+.pet{font-size:104px;text-align:center;line-height:1.25;filter:drop-shadow(0 10px 7px #34216a45);margin:7px 0 2px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.pet-title{text-align:center;font-size:19px;font-weight:900}.pet-note{text-align:center;font-size:12px;opacity:.9;margin-top:3px}.rarity{display:table;margin:9px auto 0;padding:5px 11px;border-radius:20px;background:#ffffff26;font-size:10px;font-weight:900;letter-spacing:.5px}
+.xp-row{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin:16px 0 7px;position:relative;z-index:1}
+.track{height:11px;background:#ffffff38;border-radius:20px;overflow:hidden;position:relative;z-index:1}.fill{height:100%;width:0;background:linear-gradient(90deg,#ffe477,#ffb4d2);border-radius:20px;transition:width .3s}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}.section-head h2{font-size:17px;margin:0}.tiny{font-size:12px;color:var(--muted)}
+.habit{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #f1eef8}.habit:last-child{border:0;padding-bottom:0}.habit-icon{width:42px;height:42px;border-radius:14px;background:#f4efff;display:grid;place-items:center;font-size:21px}
+.habit-info{flex:1}.habit-name{font-weight:800;font-size:14px}.habit-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.check{border:0;background:#f1eef8;color:#8d85a6;width:35px;height:35px;border-radius:12px;font-size:17px;font-weight:900;cursor:pointer}.check.done{background:#d9fff1;color:#149b73}
+button{font:inherit;cursor:pointer}.primary{border:0;background:var(--purple);color:white;font-weight:800;padding:12px 15px;border-radius:14px;box-shadow:0 5px 12px #6c4ce333}.secondary{border:1px solid var(--line);background:white;color:var(--purple);font-weight:800;padding:10px 13px;border-radius:13px}
+.add-row{display:flex;gap:8px;margin-top:12px}.add-row input{min-width:0;flex:1;border:1px solid var(--line);border-radius:13px;padding:11px;font:inherit;outline:none}
+.incubation{display:flex;align-items:center;gap:13px}.egg-small{font-size:42px}.incubation-info{flex:1}.incubation-info strong{display:block;font-size:14px}.incubation-info span{font-size:11px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#faf8ff;border-radius:16px;padding:12px 8px;text-align:center}.stat b{display:block;font-size:20px}.stat span{font-size:10px;color:var(--muted);font-weight:700}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:flex;justify-content:space-around;background:#ffffffed;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:10px 5px max(10px,env(safe-area-inset-bottom));z-index:5}
+nav button{border:0;background:transparent;color:#8d87a5;font-size:10px;font-weight:800;display:grid;gap:4px;justify-items:center;min-width:62px}nav button span{font-size:20px}nav button.active{color:var(--purple)}
+.view{display:none}.view.active{display:block}.egg-card{background:#faf8ff;border:1px solid var(--line);border-radius:18px;padding:12px;text-align:center}.egg-card .animal{font-size:38px}.egg-card strong{display:block;font-size:12px}.egg-card small{display:block;color:var(--muted);font-size:10px;margin:3px 0 8px}.egg-card button{font-size:11px;padding:8px 10px}.thresholds{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}.threshold{background:#faf8ff;border:1px solid var(--line);border-radius:12px;padding:8px 3px;text-align:center;font-size:10px;color:var(--muted)}.threshold strong{display:block;color:var(--ink);font-size:12px}.threshold.active{background:#f0eaff;border-color:#b9a6ff;color:var(--purple)}.room-scene{background:linear-gradient(180deg,#bceeff 0%,#e7f9ff 55%,#b8edcf 56%,#8bd8a8 100%);border-radius:22px;min-height:245px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:12px 0}.room-window{position:absolute;top:18px;left:18px;width:76px;height:76px;border:7px solid #fff;border-radius:18px;background:linear-gradient(#80d9ff 50%,#ffe99b 50%);box-shadow:0 4px 0 #b7a8e8}.room-pet{font-size:86px;z-index:1;filter:drop-shadow(0 8px 5px #4b6c5a55);margin-top:25px}.room-caption{z-index:1;background:#ffffffdc;padding:7px 13px;border-radius:20px;font-weight:900;font-size:13px;margin-top:2px}.room-stats{display:grid;gap:12px}.meter-line{display:grid;grid-template-columns:80px 1fr 34px;gap:8px;align-items:center;font-size:12px;font-weight:800}.meter{height:10px;border-radius:20px;background:#eeeaf7;overflow:hidden}.meter>i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#55d6b0,#9be6a4)}.room-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.room-actions button{border:0;background:#f4efff;border-radius:15px;padding:11px 5px;color:#5942b3;font-weight:800;font-size:12px}.room-actions button span{display:block;font-size:22px;margin-bottom:4px}
+.pet-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.pet-tile{background:#faf8ff;border:1px solid var(--line);border-radius:18px;padding:14px;text-align:center}.pet-tile .animal{font-size:42px}.pet-tile strong{display:block;font-size:13px}.pet-tile small{color:var(--muted)}
+.notice{background:#fff8df;border:1px solid #ffedb2;border-radius:15px;padding:11px 13px;font-size:12px;color:#7c641b;margin-top:12px}
+.modal-bg{display:none;position:fixed;inset:0;background:#241b4380;z-index:10;align-items:center;justify-content:center;padding:20px}.modal-bg.show{display:flex}.modal{max-width:340px;width:100%;background:white;border-radius:24px;padding:23px;text-align:center}.modal .hatch{font-size:88px}.modal h2{margin:5px 0}.modal p{color:var(--muted);font-size:13px}
+@media(min-width:600px){body{padding:20px 0}.app{background:#ffffff88;border:1px solid #eee9fb;border-radius:30px;min-height:calc(100vh - 40px)}nav{bottom:20px;border-radius:0 0 30px 30px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div class="logo">🐾</div>HabiPet</div><div class="coins">🪙 <span id="coins">0</span></div></header>
+<div id="home" class="view active">
+  <h1>¡Hola, aventurero! ✨</h1><p class="sub">Cada pequeño paso hace crecer tu gran aventura.</p>
+  <section class="card hero">
+    <div class="hero-top"><strong>Tu compañero misterioso</strong><span class="level" id="level">NIVEL 1</span></div>
+    <div class="pet" id="heroPet">🥚</div><div class="pet-title" id="petTitle">Huevo misterioso</div><div class="pet-note" id="petNote">¡Cuida tus hábitos para descubrir quién está dentro!</div><div class="rarity" id="eggRarity">🥚 HUEVO MISTERIOSO</div>
+    <div class="xp-row"><span>✨ EXPERIENCIA</span><span id="xpText">0 / 100 XP</span></div><div class="track"><div class="fill" id="xpFill"></div></div>
+  </section>
+  <section class="card">
+    <div class="section-head"><h2>Mis hábitos de hoy</h2><span class="tiny" id="todayCount">0 completados</span></div>
+    <div id="habitList"></div>
+    <div class="add-row"><input id="newHabit" maxlength="36" placeholder="Añadir un hábito…"><button class="primary" id="addHabit">＋</button></div>
+  </section>
+  <section class="card">
+    <div class="section-head"><h2>🥚 Recompensa de hoy</h2><span class="tiny" id="eggRewardCount">0 / 10 hábitos</span></div>
+    <div class="incubation"><div class="egg-small" id="dailyEggIcon">🥚</div><div class="incubation-info"><strong id="dailyEggTitle">¡Tu huevo te espera!</strong><span id="dailyEggMessage">Mantén los mismos hábitos durante 5 días para conseguir tu huevo.</span><div class="track" style="background:#eee9fb;margin-top:8px"><div class="fill" id="dailyEggFill" style="background:linear-gradient(90deg,#ffbd62,#ff78a9)"></div></div></div></div>
+    <div id="eggThresholds" class="notice">3 hábitos: común · 5: raro · 7: épico · 10: legendario. Tu huevo mejora durante el día.</div>
+  </section>
+  <section class="card"><div class="section-head"><h2>Tu aventura</h2><span class="tiny">Resumen</span></div><div class="stats"><div class="stat"><b id="streak">0 🔥</b><span>RACHA ACTUAL</span></div><div class="stat"><b id="totalDone">0</b><span>HÁBITOS HECHOS</span></div><div class="stat"><b id="days">0</b><span>DÍAS ACTIVOS</span></div></div></section>
+</div>
+<div id="habits" class="view"><h1>Mis hábitos 🎯</h1><p class="sub">Completa los mismos hábitos durante 5 días seguidos para conseguir tu huevo misterioso.</p><section class="card"><div class="section-head"><h2>Lista de hoy</h2><span class="tiny">+10 XP por hábito</span></div><div id="habitList2"></div></section><div class="notice">💡 Consejo: empieza con hábitos pequeños y realistas. ¡La constancia vale más que la perfección!</div></div>
+<div id="pets" class="view"><h1>Mis mascotas 🐾</h1><p class="sub">¡Cada huevo guarda una sorpresa diferente!</p><section class="card"><div class="section-head"><h2>Huevos que has ganado</h2><span class="tiny" id="eggCollectionCount">0 huevos</span></div><div id="eggCollection" class="pet-grid"></div></section><section class="card"><div class="section-head"><h2>Tu colección de mascotas</h2><span class="tiny" id="collectionCount">0 descubiertas</span></div><div id="petCollection" class="pet-grid"></div></section><div class="notice">🎁 Ganas un huevo al completar 3 hábitos en un día. Si completas más, el huevo mejora. Puedes abrirlo al día siguiente.</div></div>
+<div id="room" class="view"><h1>Mi mundo 🏡</h1><p class="sub">Un lugar acogedor para cuidar y jugar con tu compañero.</p>
+<section class="card"><div class="section-head"><h2>Tu habitación</h2><span class="tiny">Nivel de hogar 1</span></div>
+<div class="room-scene"><div class="room-window"></div><div class="room-pet" id="roomPet">🥚</div><div class="room-caption" id="roomPetName">Huevo misterioso</div></div>
+<div id="roomStats" class="room-stats"></div><div class="room-actions">
+<button id="feedPet"><span>🍎</span>Alimentar</button><button id="playPet"><span>🧸</span>Jugar</button><button id="restPet"><span>💤</span>Descansar</button>
+</div><div class="notice" id="roomMessage">🥚 Tu mascota te espera. Primero tendrás que ayudar a incubar el huevo.</div>
+</section></div>
+<div id="progress" class="view"><h1>Mi progreso 🏆</h1><p class="sub">Mira todo lo que has conseguido.</p><section class="card"><div class="section-head"><h2>Estadísticas</h2></div><div class="stats"><div class="stat"><b id="pXp">0</b><span>XP TOTAL</span></div><div class="stat"><b id="pDone">0</b><span>HÁBITOS</span></div><div class="stat"><b id="pDays">0</b><span>DÍAS ACTIVOS</span></div></div></section><section class="card"><h2 style="font-size:16px;margin:0 0 8px">Cómo avanzar</h2><p class="sub">Completa hábitos para ganar 10 XP y monedas. Cada 100 XP subes un nivel. Al completar 3 hábitos en un día ganas un huevo común; con 5, raro; con 7, épico; y con 10, legendario. El huevo del día mejora automáticamente y se puede abrir al día siguiente.</p></section></div>
+</div>
+<nav>
+<button class="active" data-view="home"><span>🏠</span>Inicio</button>
+<button data-view="habits"><span>✅</span>Hábitos</button>
+<button data-view="pets"><span>🐾</span>Mascotas</button>
+<button data-view="room"><span>🏡</span>Mi mundo</button>
+<button data-view="progress"><span>🏆</span>Progreso</button>
+</nav>
+<div class="modal-bg" id="hatchModal"><div class="modal"><div class="hatch" id="hatchAnimal">🐣</div><h2>¡Tu huevo eclosionó!</h2><p id="hatchText">¡Has descubierto una nueva mascota!</p><button class="primary" id="closeHatch">¡Qué emoción!</button></div></div>
+<script>
+const defaults=[
+ ["💧","Beber agua","Mantén tu cuerpo hidratado"],
+ ["📚","Leer o estudiar 20 min","Un poquito de aprendizaje"],
+ ["🧹","Ordenar mi espacio","Un lugar ordenado, mente tranquila"],
+ ["🚶","Caminar 15 minutos","Mueve tu cuerpo"],
+ ["🛏️","Tender mi cama","Empieza el día con orden"],
+ ["🪥","Cepillarme los dientes","Cuida tu sonrisa"],
+ ["🥗","Comer una fruta o verdura","Dale energía a tu cuerpo"],
+ ["🧘","Tomar 5 minutos para respirar","Regálate una pausa"],
+ ["🎒","Preparar mis cosas para mañana","Deja todo listo"],
+ ["🌙","Dormir a una hora adecuada","Descansa y recarga energía"]
+];
+const rarityPools=[
+ {key:"común",label:"COMÚN",emoji:"🥚",weight:60,animals:[["🐼","Pandita"],["🐸","Ranita saltarina"],["🐱","Gatito estelar"]]},
+ {key:"raro",label:"RARO",emoji:"💠",weight:25,animals:[["🦊","Zorrito mágico"],["🦋","Mariposa brillante"]]},
+ {key:"épico",label:"ÉPICO",emoji:"💜",weight:12,animals:[["🐉","Draguito"],["🦖","Dino peque"]]},
+ {key:"legendario",label:"LEGENDARIO",emoji:"🌟",weight:3,animals:[["🦄","Unicornio arcoíris"]]}
+];
+function rollPet(rarityKey){
+ const chosen=rarityPools.find(pool=>pool.key===rarityKey)||rarityPools[0];
+ const a=chosen.animals[Math.floor(Math.random()*chosen.animals.length)];
+ return {emoji:a[0],name:a[1],rarity:chosen.key,label:chosen.label,rarityEmoji:chosen.emoji};
+}
+function eggTierFor(count){
+ if(count>=10)return rarityPools[3];
+ if(count>=7)return rarityPools[2];
+ if(count>=5)return rarityPools[1];
+ if(count>=3)return rarityPools[0];
+ return null;
+}
+function challengeDates(){
+ if(!data.challengeStart)return [];
+ const start=new Date(data.challengeStart+"T12:00:00");
+ return Array.from({length:5},(_,i)=>{
+   const d=new Date(start);d.setDate(start.getDate()+i);
+   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+ });
+}
+function consistentHabitIds(){
+ const dates=challengeDates();
+ if(!dates.length)return [];
+ return data.habits.map(h=>h.id).filter(id=>dates.every(date=>(data.done[date]||[]).includes(id)));
+}
+function challengeProgress(){
+ const dates=challengeDates();
+ if(!dates.length)return {day:0,consistent:[],finished:false};
+ const elapsed=Math.floor((new Date(today()+"T12:00:00")-new Date(dates[0]+"T12:00:00"))/86400000);
+ return {day:Math.max(1,Math.min(5,elapsed+1)),consistent:consistentHabitIds(),finished:today()>=dates[4]};
+}
+function syncChallengeEgg(){
+ const progress=challengeProgress();
+ if(!progress.finished || data.challengeEggAwarded)return;
+ const count=progress.consistent.length,tier=eggTierFor(count);
+ if(tier){
+   const eggDate=challengeDates()[4],open=new Date(eggDate+"T12:00:00");
+   open.setDate(open.getDate()+2);
+   const openDate=open.getFullYear()+"-"+String(open.getMonth()+1).padStart(2,"0")+"-"+String(open.getDate()).padStart(2,"0");
+   data.eggs.push({id:"challenge-egg-"+eggDate,date:eggDate,openDate,rarity:tier.key,label:tier.label,emoji:tier.emoji,opened:false});
+   data.challengeEggAwarded=true;
+ }
+}
+
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+let data;
+try{data=JSON.parse(localStorage.getItem("habipet_5day_consistency_v1"))||null}catch(e){data=null}
+if(!data)data={habits:defaults.map((h,i)=>({id:i+1,icon:h[0],name:h[1],desc:h[2]})),done:{},xp:0,coins:0,activeDays:[],pets:[],hatched:false,streak:0,lastActive:null};
+if(!data.eggs)data.eggs=[];
+if(data.challengeEggAwarded===undefined)data.challengeEggAwarded=false;
+if(data.challengeStart===undefined)data.challengeStart=null;
+if(!data.petStats)data.petStats={hunger:75,energy:80,happiness:80};
+if(data.hatched&&data.pets.length&&!data.pets[0].emoji)data.pets[0].emoji="🐾";
+function save(){localStorage.setItem("habipet_5day_consistency_v1",JSON.stringify(data))}
+function completedToday(){return data.done[today()]||[]}
+function level(){return Math.floor(data.xp/100)+1}
+function render(){
+ const done=completedToday(),xpIn=data.xp%100,active=data.activeDays.length;
+ document.getElementById("coins").textContent=data.coins;
+ document.getElementById("level").textContent="NIVEL "+level();
+ document.getElementById("xpText").textContent=xpIn+" / 100 XP";
+ document.getElementById("xpFill").style.width=xpIn+"%";
+ const currentPet=data.pets[data.pets.length-1],todayEgg=data.eggs.find(e=>e.date===today());
+ document.getElementById("heroPet").textContent=currentPet?(currentPet.emoji||"🐾"):(todayEgg?.emoji||"🥚");
+ document.getElementById("petTitle").textContent=currentPet?currentPet.name:(todayEgg?("Huevo "+todayEgg.label.toLowerCase()):"Huevo misterioso");
+ document.getElementById("petNote").textContent=currentPet?"¡Tu compañero está listo para la aventura!":(todayEgg?"¡Tu constancia te consiguió un huevo!":"¡Mantén tus hábitos durante 5 días para ganar un huevo!");
+ document.getElementById("eggRarity").textContent=currentPet?(currentPet.rarityEmoji+" "+currentPet.label):(todayEgg?(todayEgg.emoji+" HUEVO "+todayEgg.label):"🥚 HUEVO POR GANAR");
+ document.getElementById("todayCount").textContent=done.length+" completados";
+ const progress=challengeProgress(),consistent=progress.consistent.length;
+ const challengeEgg=data.eggs.find(e=>e.id.startsWith("challenge-egg-"));
+ document.getElementById("eggRewardCount").textContent=consistent+" hábitos constantes · día "+(progress.day||0)+" / 5";
+ document.getElementById("dailyEggIcon").textContent=challengeEgg?challengeEgg.emoji:"🥚";
+ document.getElementById("dailyEggTitle").textContent=challengeEgg?("¡Huevo "+challengeEgg.label.toLowerCase()+" conseguido!"):"Reto de constancia: 5 días";
+ document.getElementById("dailyEggMessage").textContent=challengeEgg?"¡Tu huevo ya está ganado! Podrás abrirlo el día 7.":(!data.challengeStart?"Empieza completando tus hábitos de hoy. El reto comienza con tu primer registro.":(progress.finished?"Reto terminado. La rareza depende de los mismos hábitos que completaste los 5 días.":"Completa los mismos hábitos cada día. Solo cuentan los que repitas durante los 5 días."));
+ document.getElementById("dailyEggFill").style.width=Math.min(progress.day/5*100,100)+"%";
+ document.getElementById("eggThresholds").innerHTML=[["3","Común"],["5","Raro"],["7","Épico"],["10","Legendario"]].map(([n,label])=>`<div class="threshold ${consistent>=Number(n)?"active":""}"><strong>${n}</strong>${label}</div>`).join("");
+ document.getElementById("streak").textContent=data.streak+" 🔥";
+ document.getElementById("totalDone").textContent=Object.values(data.done).reduce((a,b)=>a+b.length,0);
+ document.getElementById("days").textContent=active;
+ ["pXp","pDone","pDays"].forEach((id,i)=>document.getElementById(id).textContent=[data.xp,document.getElementById("totalDone").textContent,active][i]);
+ const list=data.habits.map(h=>{let yes=done.includes(h.id);return `<div class="habit"><div class="habit-icon">${h.icon}</div><div class="habit-info"><div class="habit-name">${esc(h.name)}</div><div class="habit-meta">${esc(h.desc||"Un paso más en tu aventura")} · +10 XP</div></div><button class="check ${yes?"done":""}" data-id="${h.id}" ${yes?"disabled":""}>${yes?"✓":"＋"}</button></div>`}).join("");
+ document.getElementById("habitList").innerHTML=list||"<p class='sub'>Aún no tienes hábitos. ¡Añade uno!</p>";
+ document.getElementById("habitList2").innerHTML=list||"<p class='sub'>Aún no tienes hábitos. ¡Añade uno!</p>";
+ document.getElementById("petCollection").innerHTML=data.pets.length?data.pets.map(p=>`<div class="pet-tile"><div class="animal">${p.emoji}</div><strong>${p.name}</strong><small>${p.label||p.rarity||"Compañero"} · ${p.rarityEmoji||"🐾"}</small></div>`).join(""):"<div class='pet-tile' style='grid-column:1/-1'><div class='animal'>🥚</div><strong>Un misterio por descubrir</strong><small>¡Sigue cultivando tus hábitos!</small></div>";
+ document.getElementById("collectionCount").textContent=data.pets.length+" descubiertas";
+ const eggCards=data.eggs.slice().sort((a,b)=>b.date.localeCompare(a.date));
+ document.getElementById("eggCollectionCount").textContent=eggCards.length+" huevos";
+ document.getElementById("eggCollection").innerHTML=eggCards.length?eggCards.map(e=>`<div class="egg-card"><div class="animal">${e.emoji}</div><strong>Huevo ${e.label}</strong><small>${e.openDate&&today()<e.openDate?"Se abre el día 7":e.opened?"Ya eclosionó":"¡Listo para abrir!"}</small>${e.opened?"<small>🐾 Mascota descubierta</small>":e.openDate&&today()<e.openDate?"<small>Espera hasta el día 7</small>":`<button class="secondary open-egg" data-egg="${e.id}">Abrir huevo</button>`}</div>`).join(""):"<div class='pet-tile' style='grid-column:1/-1'><div class='animal'>🥚</div><strong>Aún no tienes huevos</strong><small>Completa los mismos hábitos durante 5 días para ganar un huevo.</small></div>";
+ document.querySelectorAll(".open-egg").forEach(b=>b.addEventListener("click",()=>openEgg(b.dataset.egg)));
+
+ const roomPet=data.pets[0];
+ document.getElementById("roomPet").textContent=roomPet?(roomPet.emoji||"🐾"):"🥚";
+ document.getElementById("roomPetName").textContent=roomPet?(roomPet.name||"Tu mascota"):"Huevo misterioso";
+ const ps=data.petStats;
+ document.getElementById("roomStats").innerHTML=roomPet?[
+  ["🍎 Hambre",ps.hunger],["⚡ Energía",ps.energy],["💖 Felicidad",ps.happiness]
+ ].map(([label,val])=>`<div class="meter-line"><span>${label}</span><div class="meter"><i style="width:${val}%"></i></div><span>${val}%</span></div>`).join(""):"<p class='sub'>Las necesidades de tu mascota aparecerán después de la eclosión.</p>";
+ ["feedPet","playPet","restPet"].forEach(id=>document.getElementById(id).disabled=!roomPet);
+
+ document.querySelectorAll(".check").forEach(b=>b.addEventListener("click",()=>complete(Number(b.dataset.id))));
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function complete(id){
+ let done=completedToday();if(done.includes(id))return;
+ if(!data.challengeStart)data.challengeStart=today();
+ done.push(id);data.done[today()]=done;data.xp+=10;data.coins+=2;
+ if(!data.activeDays.includes(today()))data.activeDays.push(today());
+ let yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+ data.streak=data.lastActive===yesterday?data.streak+1:(data.lastActive===today()?data.streak:1);
+ data.lastActive=today();
+ syncChallengeEgg();
+ save();render();
+}
+document.getElementById("addHabit").addEventListener("click",()=>{
+ let input=document.getElementById("newHabit"),name=input.value.trim();if(!name)return;
+ data.habits.push({id:Date.now(),icon:"⭐",name,desc:"Tu nuevo hábito"});input.value="";save();render()
+});
+document.getElementById("newHabit").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("addHabit").click()});
+document.getElementById("closeHatch").addEventListener("click",()=>document.getElementById("hatchModal").classList.remove("show"));
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{
+ document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===b.dataset.view));
+}));
+
+function openEgg(id){
+ const egg=data.eggs.find(e=>e.id===id);if(!egg||egg.opened||(egg.openDate&&today()<egg.openDate))return;
+ const pet=rollPet(egg.rarity);data.pets.push(pet);egg.opened=true;data.hatched=true;data.petStats={hunger:75,energy:80,happiness:80};save();render();
+ document.getElementById("hatchAnimal").textContent=pet.emoji;document.getElementById("hatchText").textContent="¡Descubriste a "+pet.name+"! Es una mascota de rareza "+pet.label+". ¡Felicidades!";document.getElementById("hatchModal").classList.add("show");
+}
+function care(action){
+ if(!data.pets.length){document.getElementById("roomMessage").textContent="🥚 ¡Primero ayudemos a eclosionar el huevo!";return}
+ const s=data.petStats;
+ if(action==="feed"){if(data.coins<2){document.getElementById("roomMessage").textContent="🪙 Necesitas 2 monedas para comprar una manzana. Completa hábitos para ganar más.";return}data.coins-=2;s.hunger=Math.min(100,s.hunger+25);document.getElementById("roomMessage").textContent="🍎 ¡Qué rico! Tu mascota está más satisfecha."}
+ if(action==="play"){s.happiness=Math.min(100,s.happiness+20);s.energy=Math.max(0,s.energy-10);document.getElementById("roomMessage").textContent="🧸 ¡Se divirtieron muchísimo! Un poquito de juego alegra el día."}
+ if(action==="rest"){s.energy=Math.min(100,s.energy+25);document.getElementById("roomMessage").textContent="💤 Tu mascota está descansando y recuperando energía."}
+ save();render();
+}
+document.getElementById("feedPet").addEventListener("click",()=>care("feed"));
+document.getElementById("playPet").addEventListener("click",()=>care("play"));
+document.getElementById("restPet").addEventListener("click",()=>care("rest"));
+render();
+</script>
+</body></html>
+
+==============================================================================
+ARCHIVO: app/src/main/AndroidManifest.xml
+==============================================================================
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:label="HabiPet"
+        android:usesCleartextTraffic="false"
+        android:allowBackup="true"
+        android:supportsRtl="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+
+==============================================================================
+ARCHIVO: app/build.gradle
+==============================================================================
+
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'com.habitpet.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.habitpet.app'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+}
+
+
+==============================================================================
+ARCHIVO: build.gradle
+==============================================================================
+
+plugins {
+    id 'com.android.application' version '8.7.3' apply false
+}
+
+
+==============================================================================
+ARCHIVO: settings.gradle
+==============================================================================
+
+pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+rootProject.name = "HabitPet"
+include(":app")
+
+
+==============================================================================
+ARCHIVO: gradle.properties
+==============================================================================
+
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+
